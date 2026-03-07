@@ -297,15 +297,24 @@ const Header: React.FC = () => {
           className="flex items-center gap-3 font-black text-blue-600 tracking-tight hover:opacity-90 transition-opacity"
         >
           <img
+            src="/images/samathiakthiak-logo-desktop.svg"
+            alt={t('common.appName')}
+            onError={(e: any) => {
+              e.currentTarget.onerror = null;
+              e.currentTarget.src = '/images/site.png';
+            }}
+            className="hidden md:block h-10 lg:h-11 w-auto"
+          />
+          <img
             src="/images/samathiakthiak-logo.svg"
             alt={t('common.appName')}
             onError={(e: any) => {
               e.currentTarget.onerror = null;
               e.currentTarget.src = '/images/site.png';
             }}
-            className="h-10 w-10 sm:h-11 sm:w-11 rounded-xl border border-slate-200 bg-white"
+            className="md:hidden h-10 w-10 sm:h-11 sm:w-11 rounded-xl border border-slate-200 bg-white"
           />
-          <span className="text-lg sm:text-xl text-blue-600">{t('common.appName')}</span>
+          <span className="md:hidden text-lg sm:text-xl text-blue-600">{t('common.appName')}</span>
         </Link>
 
         {/* Desktop Nav */}
