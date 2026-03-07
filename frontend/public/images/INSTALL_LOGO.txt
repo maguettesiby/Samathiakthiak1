@@ -1,0 +1,12 @@
+Placez le logo que vous m'avez fourni (fichier image) dans ce dossier avec le nom exact :
+
+  frontend/public/images/samathiakthiak.png
+
+Instructions :
+1. Dans l'interface où vous avez uploadé le logo, téléchargez le fichier joint et renommez-le si nécessaire.
+2. Copiez `samathiakthiak.png` dans `frontend/public/images/`.
+3. Redémarrez le serveur frontend si nécessaire (`npm run dev` depuis le dossier `frontend`).
+
+Notes :
+- Les composants React essaieront de charger `/images/samathiakthiak.png` et — en cas d'erreur — retomberont sur `/images/logo.svg`.
+- Pour un favicon, vous pouvez renommer `samathiakthiak.png` en `favicon.png` et ajouter une balise `<link rel="icon" href="/images/favicon.png"/>` si vous le souhaitez.

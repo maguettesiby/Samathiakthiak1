@@ -1,0 +1,35 @@
+<svg width="600" height="200" viewBox="0 0 600 200" xmlns="http://www.w3.org/2000/svg">
+
+  <!-- Icon Circle -->
+  <circle cx="100" cy="100" r="70" fill="#0A6CFF"/>
+
+  <!-- Stylized S -->
+  <path d="M75 75 
+           C120 40, 150 120, 95 120 
+           C60 120, 80 155, 130 145" 
+        stroke="white" 
+        stroke-width="10" 
+        fill="none" 
+        stroke-linecap="round"/>
+
+  <!-- Arrow -->
+  <polygon points="125,140 150,145 135,160" fill="white"/>
+
+  <!-- Brand Name -->
+  <text x="200" y="105" 
+        font-family="Montserrat, Arial, sans-serif" 
+        font-size="40" 
+        fill="#003366" 
+        font-weight="bold">
+    SAMATHIAKTHIAK
+  </text>
+
+  <!-- Tagline -->
+  <text x="200" y="140" 
+        font-family="Poppins, Arial, sans-serif" 
+        font-size="18" 
+        fill="#0A6CFF">
+    Un clic, un livreur.
+  </text>
+
+</svg>

@@ -1,0 +1,41 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="accent" x1="96" y1="96" x2="416" y2="416" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#2563EB"/>
+      <stop offset="1" stop-color="#1D4ED8"/>
+    </linearGradient>
+    <linearGradient id="accentSoft" x1="140" y1="120" x2="380" y2="400" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#60A5FA" stop-opacity="0.25"/>
+      <stop offset="1" stop-color="#2563EB" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="shadow" x="0" y="0" width="512" height="512" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feOffset dy="10"/>
+      <feGaussianBlur stdDeviation="18"/>
+      <feColorMatrix type="matrix" values="0 0 0 0 0.02 0 0 0 0 0.09 0 0 0 0 0.19 0 0 0 0.12 0"/>
+      <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow"/>
+      <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow" result="shape"/>
+    </filter>
+  </defs>
+
+  <g filter="url(#shadow)">
+    <rect x="64" y="64" width="384" height="384" rx="96" fill="#FFFFFF"/>
+    <rect x="64" y="64" width="384" height="384" rx="96" fill="url(#accentSoft)"/>
+    <rect x="64" y="64" width="384" height="384" rx="96" stroke="#E2E8F0" stroke-width="8"/>
+
+    <path
+      d="M320.6 167.3C311.2 157.8 298.9 153 283.5 153H226.8C201.6 153 181.2 173.4 181.2 198.6C181.2 223.9 201.6 244.3 226.8 244.3H282.3C294.4 244.3 304.2 254.1 304.2 266.2C304.2 278.3 294.4 288.1 282.3 288.1H219.2C206.2 288.1 195.7 277.6 195.7 264.6V255.9H160.8V265.9C160.8 302.4 190.3 331.9 226.8 331.9H285.7C312 331.9 333.4 310.5 333.4 284.2C333.4 258 312 236.6 285.7 236.6H226.8C220.1 236.6 214.6 231.2 214.6 224.5C214.6 217.7 220.1 212.3 226.8 212.3H283.5C296.4 212.3 306.9 222.8 306.9 235.7V244.3H341.8V233.6C341.8 214.3 334 180.7 320.6 167.3Z"
+      fill="url(#accent)"
+    />
+
+    <path
+      d="M348 350.5C322.2 379.4 289 393.8 248.7 393.8C207 393.8 173.4 379.7 147.8 351.4"
+      stroke="#2563EB"
+      stroke-width="18"
+      stroke-linecap="round"
+      opacity="0.9"
+    />
+
+    <circle cx="365" cy="344" r="12" fill="#2563EB"/>
+    <circle cx="131" cy="344" r="12" fill="#2563EB"/>
+  </g>
+</svg>

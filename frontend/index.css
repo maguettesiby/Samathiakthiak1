@@ -1,0 +1,262 @@
+/* ============================================
+   ANIMATIONS MODERNES & TRANSITIONS
+   ============================================ */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes bounce-subtle {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes glow {
+  0%, 100% {
+    box-shadow: 0 0 5px rgba(59, 130, 246, 0.3), 0 0 20px rgba(59, 130, 246, 0.1);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.5), 0 0 40px rgba(59, 130, 246, 0.2);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+/* ============================================
+   CLASSES UTILITAIRES PERSONNALISÉES
+   ============================================ */
+
+.animate-fade-in {
+  animation: fadeIn 0.6s ease-out;
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.8s ease-out;
+}
+
+.animate-slide-in-right {
+  animation: slideInRight 0.6s ease-out;
+}
+
+.animate-slide-in-left {
+  animation: slideInLeft 0.6s ease-out;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.animate-bounce-subtle {
+  animation: bounce-subtle 3s ease-in-out infinite;
+}
+
+.animate-glow {
+  animation: glow 3s ease-in-out infinite;
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+/* ============================================
+   STYLES GLOBAUX MODERNES
+   ============================================ */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  scrollbar-width: thin;
+  scrollbar-color: #3b82f6 #f3f4f6;
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: #f3f4f6;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: #3b82f6;
+  border-radius: 4px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: #2563eb;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: #f8fafc;
+}
+
+.dark body {
+  background: #0b1220;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+/* ============================================
+   CARTES & CONTENEURS
+   ============================================ */
+
+.card-modern {
+  @apply bg-white rounded-2xl shadow-sm border border-slate-200/70 hover:shadow-md transition-all duration-300;
+}
+
+.dark .card-modern {
+  @apply bg-slate-900 border-slate-700/70;
+}
+
+.card-hover {
+  @apply card-modern hover:scale-105 hover:-translate-y-1 cursor-pointer;
+}
+
+/* ============================================
+   ANIMATIONS PERSONNALISÉES
+   ============================================ */
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.animate-slide-in-right {
+  animation: slideInRight 0.3s ease-out;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.2s ease-out;
+}
+
+/* ============================================
+   BOUTONS PERSONNALISÉS
+   ============================================ */
+
+.btn-primary {
+  @apply px-5 py-3 rounded-xl font-semibold text-base bg-blue-600 text-white shadow-sm hover:bg-blue-700 transition-colors duration-200 active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed;
+}
+
+.btn-secondary {
+  @apply px-5 py-3 rounded-xl font-semibold text-base bg-slate-100 text-slate-900 border border-slate-200 hover:bg-slate-200 transition-colors duration-200 active:scale-[0.99];
+}
+
+.dark .btn-secondary {
+  @apply bg-slate-800 text-slate-100 border-slate-700 hover:bg-slate-700;
+}
+
+.btn-ghost {
+  @apply px-4 py-2 rounded-xl font-semibold text-sm text-slate-700 hover:bg-slate-100 transition-colors duration-200;
+}
+
+.input-modern {
+  @apply w-full px-4 py-3 border border-slate-300 rounded-xl bg-white text-slate-900 placeholder-slate-400 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-all;
+}
+
+.dark .input-modern {
+  @apply bg-slate-900 text-slate-100 border-slate-700 placeholder-slate-400;
+}
+
+.label-modern {
+  @apply block text-sm font-semibold text-slate-700 mb-2;
+}
+
+.dark .label-modern {
+  @apply text-slate-200;
+}
+
+.page-shell {
+  @apply min-h-screen bg-slate-50;
+}
+
+/* ============================================
+   GLASSMORPHISM
+   ============================================ */
+
+.glass {
+  @apply bg-white/30 backdrop-blur-2xl border border-white/20;
+}
+
