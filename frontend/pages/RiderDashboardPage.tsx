@@ -12,6 +12,9 @@ const RiderDashboardPage: React.FC = () => {
   const navigate = useNavigate();
   const [rider, setRider] = useState<Rider | null>(null);
   const [loading, setLoading] = useState(true);
+  const [notifications, setNotifications] = useState<Awaited<ReturnType<typeof mockApi.getMyNotifications>>>([]);
+  const [notificationsError, setNotificationsError] = useState('');
+  const [now, setNow] = useState(() => Date.now());
   const [profileForm, setProfileForm] = useState({
     firstName: '',
     lastName: '',
@@ -40,6 +43,36 @@ const RiderDashboardPage: React.FC = () => {
     loadRiderData();
   }, [user, navigate]);
 
+  useEffect(() => {
+    if (!rider) return;
+
+    const shouldTick =
+      (rider.availabilityStatus === AvailabilityStatus.BUSY ||
+        rider.availabilityStatus === AvailabilityStatus.OFFLINE) &&
+      Boolean(rider.availabilitySince);
+
+    if (!shouldTick) return;
+
+    const id = window.setInterval(() => setNow(Date.now()), 1000);
+    return () => window.clearInterval(id);
+  }, [rider?.availabilityStatus, rider?.availabilitySince, rider]);
+
+  const formatElapsed = (sinceIso?: string | null) => {
+    if (!sinceIso) return '';
+    const since = new Date(sinceIso).getTime();
+    if (!Number.isFinite(since)) return '';
+
+    const diffMs = Math.max(0, now - since);
+    const totalSeconds = Math.floor(diffMs / 1000);
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+
+    if (hours > 0) return `${hours}h ${minutes}min`;
+    if (minutes > 0) return `${minutes}min ${seconds}s`;
+    return `${seconds}s`;
+  };
+
   const loadRiderData = async () => {
     try {
       const data = await mockApi.getMe();
@@ -50,10 +83,27 @@ const RiderDashboardPage: React.FC = () => {
         profilePhoto: null,
       });
       setPhoneForm({ phone: data.phone || '' });
+
+      setNotificationsError('');
+      try {
+        const items = await mockApi.getMyNotifications();
+        setNotifications(items);
+      } catch (e: any) {
+        setNotificationsError(e?.message || 'Erreur lors du chargement des notifications');
+      }
     } catch (error) {
       console.error('Erreur lors du chargement des données:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const markNotificationRead = async (id: string) => {
+    try {
+      await mockApi.markNotificationRead(id);
+      setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, isRead: true } : n)));
+    } catch (error) {
+      console.error('Erreur lors du marquage de la notification:', error);
     }
   };
 
@@ -165,6 +215,45 @@ const RiderDashboardPage: React.FC = () => {
 
         {rider && (
           <>
+            {notificationsError ? (
+              <div className="card-modern p-5 mb-6 border border-slate-200 bg-slate-50">
+                <p className="text-slate-700 text-sm font-semibold">{notificationsError}</p>
+              </div>
+            ) : null}
+
+            {notifications.filter((n) => !n.isRead).length > 0 ? (
+              <div className="card-modern p-5 mb-6 border border-emerald-200 bg-emerald-50">
+                <p className="font-black text-emerald-900 mb-2">
+                  {notifications.filter((n) => !n.isRead).length === 1
+                    ? 'Nouvelle notification'
+                    : 'Nouvelles notifications'}
+                </p>
+                <div className="space-y-3">
+                  {notifications
+                    .filter((n) => !n.isRead)
+                    .slice(0, 3)
+                    .map((n) => (
+                      <div key={n.id} className="rounded-xl border border-emerald-200 bg-white/70 px-4 py-3">
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="flex-1">
+                            <p className="text-sm font-black text-emerald-950">{n.title}</p>
+                            <p className="text-sm text-emerald-950/90 mt-1 whitespace-pre-wrap">{n.message}</p>
+                            <p className="text-xs text-emerald-900/70 mt-2">{new Date(n.createdAt).toLocaleString()}</p>
+                          </div>
+                          <button
+                            type="button"
+                            className="btn-secondary"
+                            onClick={() => markNotificationRead(n.id)}
+                          >
+                            Marquer comme lu
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                </div>
+              </div>
+            ) : null}
+
             {rider.status !== RiderStatus.ACTIVE && (
               <div
                 className={`card-modern p-5 mb-6 border ${
@@ -253,6 +342,14 @@ const RiderDashboardPage: React.FC = () => {
                     </span>
                     <span className="text-xs text-slate-500">{t('riderDashboard.availabilityHint')}</span>
                   </div>
+
+                  {(rider.availabilityStatus === AvailabilityStatus.BUSY ||
+                    rider.availabilityStatus === AvailabilityStatus.OFFLINE) &&
+                  rider.availabilitySince ? (
+                    <div className="mt-2 text-xs font-semibold text-slate-600">
+                      Depuis {formatElapsed(rider.availabilitySince)}
+                    </div>
+                  ) : null}
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">

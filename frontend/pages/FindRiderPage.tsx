@@ -3,7 +3,6 @@ import { mockApi } from '../services/mockDb';
 import { AvailabilityStatus, Rider } from '../types';
 import RiderCard from '../components/RiderCard';
 import RiderCardSkeleton from '../components/RiderCardSkeleton';
-import InfiniteScroll from '../components/InfiniteScroll';
 import { usePayment } from '../context/PaymentContext';
 import { useAuth } from '../context/AuthContext';
 import { Search, Filter, Users, Clock, X } from 'lucide-react';
@@ -75,6 +74,10 @@ const FindRiderPage: React.FC = () => {
   const [favoritesVersion, setFavoritesVersion] = useState(0);
   const [remainingMs, setRemainingMs] = useState<number | null>(null);
   const { session } = usePayment();
+
+  const INITIAL_VISIBLE = 8;
+  const VISIBLE_STEP = 8;
+  const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE);
 
   useEffect(() => {
     loadRiders({ silent: false });
@@ -256,6 +259,22 @@ const FindRiderPage: React.FC = () => {
 
     return list;
   }, [filteredRiders, favorites, sortBy]);
+
+  const recentRiders = useMemo(() => {
+    const list = [...sortedRiders];
+    list.sort((a, b) => {
+      const ta = new Date(a.joinedAt).getTime();
+      const tb = new Date(b.joinedAt).getTime();
+      const safeA = Number.isNaN(ta) ? 0 : ta;
+      const safeB = Number.isNaN(tb) ? 0 : tb;
+      return safeB - safeA;
+    });
+    return list;
+  }, [sortedRiders]);
+
+  useEffect(() => {
+    setVisibleCount(INITIAL_VISIBLE);
+  }, [sortBy, search, locationFilter, userZone, typeFilter, genderFilter, availabilityFilter, onlyFavorites, onlyMyZone, favoritesVersion]);
 
   const formatTime = (ms: number) => {
     const seconds = Math.floor(ms / 1000);
@@ -596,21 +615,31 @@ const FindRiderPage: React.FC = () => {
             <p className="text-slate-600">{t('findRider.emptySubtitle')}</p>
           </div>
         ) : (
-          <InfiniteScroll
-            key={`${sortBy}_${search}_${locationFilter}_${userZone}_${typeFilter}_${genderFilter}_${availabilityFilter}_${onlyFavorites}_${onlyMyZone}`}
-            items={sortedRiders}
-            pageSize={12}
-            gridClassName="grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
-            renderItem={(rider, idx) => (
-              <div style={{ animationDelay: `${idx * 0.05}s` }} className="animate-fade-in-up">
-                <RiderCard
-                  rider={rider}
-                  userZone={userZone}
-                  onFavoritesChanged={() => setFavoritesVersion((v) => v + 1)}
-                />
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 animate-fade-in">
+              {recentRiders.slice(0, visibleCount).map((rider, idx) => (
+                <div key={rider.id} style={{ animationDelay: `${idx * 0.05}s` }} className="animate-fade-in-up">
+                  <RiderCard
+                    rider={rider}
+                    userZone={userZone}
+                    onFavoritesChanged={() => setFavoritesVersion((v) => v + 1)}
+                  />
+                </div>
+              ))}
+            </div>
+
+            {visibleCount < recentRiders.length ? (
+              <div className="mt-10 flex justify-center">
+                <button
+                  type="button"
+                  className="btn-primary"
+                  onClick={() => setVisibleCount((v) => Math.min(recentRiders.length, v + VISIBLE_STEP))}
+                >
+                  Voir plus
+                </button>
               </div>
-            )}
-          />
+            ) : null}
+          </>
         )}
       </div>
     </div>

@@ -40,6 +40,7 @@ CREATE TABLE IF NOT EXISTS riders (
     rider_function ENUM('Livreur moto', 'Livreur auto', 'Livreur Taxi Bagage', 'Livreur 3 roues') DEFAULT 'Livreur moto',
     status ENUM('pending', 'documents_required', 'active', 'rejected', 'banned') DEFAULT 'pending',
     availability ENUM('offline', 'online', 'busy') DEFAULT 'offline',
+    availability_since TIMESTAMP NULL DEFAULT NULL,
     profile_photo VARCHAR(500),
     id_card VARCHAR(500),
     license VARCHAR(500),
@@ -121,6 +122,23 @@ CREATE TABLE IF NOT EXISTS user_oauth_accounts (
     INDEX idx_oauth_user_id (user_id),
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
+
+ -- =============================================
+ -- Table des notifications (ex: validation dossier livreur)
+ -- =============================================
+ CREATE TABLE IF NOT EXISTS notifications (
+     id INT AUTO_INCREMENT PRIMARY KEY,
+     user_id INT NOT NULL,
+     title VARCHAR(255) NOT NULL,
+     message TEXT NOT NULL,
+     type VARCHAR(50) NOT NULL DEFAULT 'info',
+     is_read BOOLEAN NOT NULL DEFAULT FALSE,
+     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+     INDEX idx_notifications_user_id (user_id),
+     INDEX idx_notifications_is_read (is_read),
+     INDEX idx_notifications_created_at (created_at),
+     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+ ) ENGINE=InnoDB;
 
 -- =============================================
 -- Insérer un administrateur par défaut

@@ -62,6 +62,7 @@ const initDatabase = async () => {
         rider_function ENUM('Livreur moto', 'Livreur auto', 'Livreur Taxi Bagage', 'Livreur 3 roues') DEFAULT 'Livreur moto',
         status ENUM('pending', 'active', 'rejected', 'banned') DEFAULT 'pending',
         availability ENUM('offline', 'online', 'busy') DEFAULT 'offline',
+        availability_since TIMESTAMP NULL DEFAULT NULL,
         subscription_expires_at TIMESTAMP NULL DEFAULT NULL,
         profile_photo VARCHAR(500),
         id_card VARCHAR(500),
@@ -71,11 +72,19 @@ const initDatabase = async () => {
         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
         INDEX idx_status (status),
         INDEX idx_availability (availability),
+        INDEX idx_availability_since (availability_since),
         INDEX idx_subscription_expires_at (subscription_expires_at),
         INDEX idx_user_id (user_id)
       ) ENGINE=InnoDB
     `);
     console.log('✅ Table "riders" créée/vérifiée');
+
+    // Rétro-compat: ajouter la colonne si la table existait avant
+    await connection.query(
+      `ALTER TABLE riders ADD COLUMN availability_since TIMESTAMP NULL DEFAULT NULL`
+    ).catch(() => {
+      // ignore (colonne déjà présente)
+    });
 
     // Créer la table access_sessions
     await connection.query(`
@@ -157,6 +166,23 @@ const initDatabase = async () => {
       ) ENGINE=InnoDB
     `);
     console.log('✅ Table "user_oauth_accounts" créée/vérifiée');
+
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS notifications (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        user_id INT NOT NULL,
+        title VARCHAR(255) NOT NULL,
+        message TEXT NOT NULL,
+        type VARCHAR(50) NOT NULL DEFAULT 'info',
+        is_read BOOLEAN NOT NULL DEFAULT FALSE,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        INDEX idx_notifications_user_id (user_id),
+        INDEX idx_notifications_is_read (is_read),
+        INDEX idx_notifications_created_at (created_at),
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+      ) ENGINE=InnoDB
+    `);
+    console.log('✅ Table "notifications" créée/vérifiée');
 
     // Vérifier si l'admin existe déjà
     const [adminRows]: any = await connection.query(

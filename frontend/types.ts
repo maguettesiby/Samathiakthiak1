@@ -38,6 +38,7 @@ export interface Rider {
   address: string;
   status: RiderStatus;
   availabilityStatus: AvailabilityStatus;
+  availabilitySince?: string | null;
   riderFunction: RiderFunction;
   emailVerified: boolean;
   gender?: Gender;

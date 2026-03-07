@@ -204,6 +204,15 @@ export type UpsertReviewInput = {
   comment?: string;
 };
 
+export type RiderNotification = {
+  id: string;
+  title: string;
+  message: string;
+  type: string;
+  isRead: boolean;
+  createdAt: string;
+};
+
 const getHeaders = () => {
   const token = localStorage.getItem('token');
   const headers: HeadersInit = { 'Content-Type': 'application/json' };
@@ -242,6 +251,7 @@ const normalizeRider = (data: any): Rider => {
     address: data.address || "",
     status: (data.status as RiderStatus) || RiderStatus.PENDING,
     availabilityStatus: (data.availability as AvailabilityStatus) || AvailabilityStatus.OFFLINE,
+    availabilitySince: (data.availabilitySince ?? data.availability_since) || undefined,
     riderFunction: (data.riderFunction as RiderFunction) || RiderFunction.MOTO,
     emailVerified: true,
     verificationNote: (data.verificationNote as string) || (data.verification_note as string) || undefined,
@@ -339,6 +349,28 @@ export const mockApi = {
     }
     const data = await response.json();
     return normalizeRider(data);
+  },
+
+  getMyNotifications: async (): Promise<RiderNotification[]> => {
+    const response = await fetch(`${API_URL}/riders/me/notifications`, { headers: getHeaders() });
+    if (!response.ok) {
+      const data = await response.json().catch(() => ({}));
+      throw new Error(data?.message || 'Erreur lors du chargement des notifications');
+    }
+    const data = await response.json();
+    return Array.isArray(data) ? (data as RiderNotification[]) : [];
+  },
+
+  markNotificationRead: async (id: string): Promise<void> => {
+    const response = await fetch(`${API_URL}/riders/me/notifications/${encodeURIComponent(id)}/read`, {
+      method: 'PUT',
+      headers: getHeaders(),
+    });
+
+    if (!response.ok) {
+      const data = await response.json().catch(() => ({}));
+      throw new Error(data?.message || 'Erreur lors de la mise à jour de la notification');
+    }
   },
 
   updateRiderPhone: async (phone: string): Promise<Rider> => {

@@ -85,6 +85,18 @@ export default function BusinessPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 py-4">
             <div>
+              <div className="flex items-center gap-3 mb-2">
+                <img
+                  src="/images/samathiakthiak-icon-mobile.svg"
+                  alt="SamaThiakThiak"
+                  className="h-10 w-10 md:hidden"
+                />
+                <img
+                  src="/images/samathiakthiak-logo-desktop.svg"
+                  alt="SamaThiakThiak"
+                  className="hidden md:block h-10 w-auto"
+                />
+              </div>
               <h1 className="text-2xl font-bold text-gray-900">Espace Business</h1>
               <p className="text-sm text-gray-600">{user.companyName}</p>
             </div>

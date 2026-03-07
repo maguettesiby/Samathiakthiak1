@@ -1,10 +1,12 @@
 import { Router, Response } from 'express';
 import multer from 'multer';
 import path from 'path';
+import fs from 'fs';
 import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 import pool from '../database/config';
-import { authenticate, requireAdmin, requireRider, AuthRequest } from '../middleware/auth';
 import { RowDataPacket, ResultSetHeader } from 'mysql2';
+import { authenticate, AuthRequest, requireAdmin } from '../middleware/auth';
 
 const router = Router();
 
@@ -16,16 +18,27 @@ interface RiderRow extends RowDataPacket {
   last_name: string;
   phone: string;
   address: string;
-  gender: string | null;
+  gender: string;
   rider_function: string;
   status: string;
   availability: string;
-  subscription_expires_at: string | null;
-  profile_photo: string | null;
-  id_card: string | null;
-  license: string | null;
-  verification_note: string | null;
+  availability_since?: string | null;
+  subscription_expires_at?: string;
+  profile_photo?: string;
+  id_card?: string;
+  license?: string;
+  verification_note?: string | null;
   joined_at: string;
+}
+
+interface NotificationRow extends RowDataPacket {
+  id: number;
+  user_id: number;
+  title: string;
+  message: string;
+  type: string;
+  is_read: number;
+  created_at: string;
 }
 
 // Configuration de Multer pour stocker les images
@@ -33,6 +46,55 @@ const storage = multer.diskStorage({
   destination: './uploads/',
   filename: (req, file, cb) => {
     cb(null, `${Date.now()}-${file.fieldname}${path.extname(file.originalname)}`);
+  }
+});
+
+// GET /api/riders/me/notifications - Notifications du livreur connecté
+router.get('/me/notifications', authenticate, async (req: AuthRequest, res: Response) => {
+  try {
+    const [rows] = await pool.query<NotificationRow[]>(
+      `SELECT id, title, message, type, is_read, created_at
+       FROM notifications
+       WHERE user_id = ?
+       ORDER BY created_at DESC
+       LIMIT 50`,
+      [req.user!.id]
+    );
+
+    res.json(
+      rows.map((n) => ({
+        id: n.id.toString(),
+        title: n.title,
+        message: n.message,
+        type: n.type,
+        isRead: Boolean(n.is_read),
+        createdAt: n.created_at,
+      }))
+    );
+  } catch (error: any) {
+    console.error('Erreur get notifications:', error);
+    res.status(500).json({ message: 'Erreur serveur' });
+  }
+});
+
+// PUT /api/riders/me/notifications/:id/read - Marquer une notification comme lue
+router.put('/me/notifications/:id/read', authenticate, async (req: AuthRequest, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    const [result] = await pool.query<ResultSetHeader>(
+      'UPDATE notifications SET is_read = TRUE WHERE id = ? AND user_id = ?',
+      [id, req.user!.id]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Notification non trouvée' });
+    }
+
+    res.json({ message: 'Notification marquée comme lue' });
+  } catch (error: any) {
+    console.error('Erreur mark notification read:', error);
+    res.status(500).json({ message: 'Erreur serveur' });
   }
 });
 
@@ -238,6 +300,7 @@ router.get('/me', authenticate, async (req: AuthRequest, res: Response) => {
       riderFunction: rider.rider_function,
       status: rider.status,
       availability: rider.availability,
+      availabilitySince: rider.availability_since,
       subscriptionExpiresAt: rider.subscription_expires_at,
       subscriptionActive: isSubscriptionActive,
       subscription_expires_at: rider.subscription_expires_at,
@@ -377,10 +440,37 @@ router.put('/availability', authenticate, async (req: AuthRequest, res: Response
       return res.status(400).json({ message: 'Statut invalide' });
     }
 
-    await pool.query(
-      'UPDATE riders SET availability = ? WHERE user_id = ?',
-      [status, req.user!.id]
+    const [rows] = await pool.query<RiderRow[]>(
+      'SELECT availability, availability_since FROM riders WHERE user_id = ?',
+      [req.user!.id]
     );
+
+    if (rows.length === 0) {
+      return res.status(404).json({ message: 'Profil non trouvé' });
+    }
+
+    const current = rows[0];
+    let nextSince: Date | null = null;
+
+    if (status === 'online') {
+      nextSince = null;
+    } else if (status === 'busy' || status === 'offline') {
+      const sameStatus = current.availability === status;
+      const hasSince = Boolean(current.availability_since);
+      nextSince = sameStatus && hasSince ? null : new Date();
+    }
+
+    if (nextSince === null) {
+      await pool.query(
+        'UPDATE riders SET availability = ?, availability_since = NULL WHERE user_id = ?',
+        [status, req.user!.id]
+      );
+    } else {
+      await pool.query(
+        'UPDATE riders SET availability = ?, availability_since = ? WHERE user_id = ?',
+        [status, nextSince, req.user!.id]
+      );
+    }
 
     res.json({ message: 'Disponibilité mise à jour', availability: status });
 
@@ -427,6 +517,8 @@ router.get('/', authenticate, requireAdmin, async (req: AuthRequest, res: Respon
 
 // PUT /api/riders/:id/status - Mettre à jour le statut d'un livreur (admin)
 router.put('/:id/status', authenticate, requireAdmin, async (req: AuthRequest, res: Response) => {
+  const connection = await pool.getConnection();
+
   try {
     const { id } = req.params;
     const { status, verificationNote } = req.body as { status: string; verificationNote?: unknown };
@@ -444,20 +536,56 @@ router.put('/:id/status', authenticate, requireAdmin, async (req: AuthRequest, r
       return res.status(400).json({ message: 'Le motif est obligatoire pour ce statut' });
     }
 
-    const [result] = await pool.query<ResultSetHeader>(
+    await connection.beginTransaction();
+
+    const [riderRows] = await connection.query<RiderRow[]>(
+      'SELECT user_id, status FROM riders WHERE id = ?',
+      [id]
+    );
+
+    if (riderRows.length === 0) {
+      await connection.rollback();
+      return res.status(404).json({ message: 'Livreur non trouvé' });
+    }
+
+    const previousStatus = riderRows[0].status;
+    const riderUserId = riderRows[0].user_id;
+
+    const [result] = await connection.query<ResultSetHeader>(
       'UPDATE riders SET status = ?, verification_note = ? WHERE id = ?',
       [status, noteToStore, id]
     );
 
     if (result.affectedRows === 0) {
+      await connection.rollback();
       return res.status(404).json({ message: 'Livreur non trouvé' });
     }
+
+    if (previousStatus !== 'active' && status === 'active') {
+      const title = 'Dossier accepté';
+      const message =
+        "Votre dossier a été traité et accepté. Vous pouvez commencer votre aventure maintenant, vous êtes parti de SamaThiakThiak.";
+
+      await connection.query<ResultSetHeader>(
+        'INSERT INTO notifications (user_id, title, message, type) VALUES (?, ?, ?, ?)',
+        [riderUserId, title, message, 'success']
+      );
+    }
+
+    await connection.commit();
 
     res.json({ message: 'Statut mis à jour', status, verificationNote: noteToStore });
 
   } catch (error: any) {
+    try {
+      await connection.rollback();
+    } catch {
+      // ignore
+    }
     console.error('Erreur update status:', error);
     res.status(500).json({ message: 'Erreur serveur' });
+  } finally {
+    connection.release();
   }
 });
 
