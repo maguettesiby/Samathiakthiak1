@@ -91,18 +91,15 @@ const Footer = () => {
           <div className="space-y-6 animate-fade-in" style={{ animationDelay: '0.3s' }}>
             <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider">{t('footer.contact')}</h3>
             <div className="space-y-4">
-              <a href="tel:+221770000000" onClick={handleExternalLinkClick} className="flex items-start gap-3 text-slate-600 hover:text-slate-900 transition-colors duration-200 group">
+              <a href="tel:+221775616203" onClick={handleExternalLinkClick} className="flex items-start gap-3 text-slate-600 hover:text-slate-900 transition-colors duration-200 group">
                 <Phone size={18} className="mt-0.5" />
-                <span className="text-sm">+221 77 000 00 00</span>
+                <span className="text-sm">+221 77 561 62 03</span>
               </a>
 
-              <a href={supportWhatsAppHref} target="_blank" rel="noreferrer" onClick={handleExternalLinkClick} className="flex items-start gap-3 text-slate-600 hover:text-slate-900 transition-colors duration-200 group">
-                <MessageCircle size={18} className="mt-0.5" />
-                <span className="text-sm">{t('footer.supportWhatsapp')}</span>
-              </a>
-              <a href="mailto:support@samathiakthiak.sn" onClick={handleExternalLinkClick} className="flex items-start gap-3 text-slate-600 hover:text-slate-900 transition-colors duration-200 group">
+              
+              <a href="mailto:samathiakthiak@gmail.com" onClick={handleExternalLinkClick} className="flex items-start gap-3 text-slate-600 hover:text-slate-900 transition-colors duration-200 group">
                 <Mail size={18} className="mt-0.5" />
-                <span className="text-sm">support@samathiakthiak.sn</span>
+                <span className="text-sm">samathiakthiak@gmail.com</span>
               </a>
               <div className="flex items-start gap-3 text-slate-600">
                 <MapPin size={18} className="mt-0.5" />
