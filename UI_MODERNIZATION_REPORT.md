@@ -322,7 +322,7 @@ Cette documentation détaille toutes les améliorations apportées au design et 
 {items.map((item, idx) => (
   <div 
     key={item.id} 
-    style={{ animationDelay: `${idx * 0.05}s` }}
+    style={{ animationDelay: idx | times: 0.05 }}
     className="animate-fade-in-up"
   >
     {item.content}
