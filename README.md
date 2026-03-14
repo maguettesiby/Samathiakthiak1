@@ -2,7 +2,7 @@
 
 ## Description
 
-Samathiakthiak1 est un projet qui vise à [ajouter une description brève de ce que fait le projet]. Ce dépôt contient le code source, la documentation, et des informations sur l'installation et l'utilisation.
+Samathiakthiak1 est un projet qui vise à mettre en relation des utilisateurs avec des services de livraison et de transport (moto, taxi, transport de bagages et triporteurs). Ce dépôt contient le code source, la documentation, et des informations sur l'installation et l'utilisation.
 
 ## Table des matières
 
