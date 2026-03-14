@@ -23,24 +23,6 @@ Pour installer ce projet, suivez ces étapes :
 
    # Samathiakthiak1
 
-## Description
-
-Samathiakthiak1 est un projet qui vise à [ajouter une description brève de ce que fait le projet]. Ce dépôt contient le code source, la documentation, et des informations sur l'installation et l'utilisation.
-
-## Table des matières
-
-- [Installation](#installation)
-- [Utilisation](#utilisation)
-- [Structure du projet](#structure-du-projet)
-- [Technologies utilisées](#technologies-utilisées)
-- [Contributeurs](#contributeurs)
-- [Licence](#licence)
-
-## Installation
-
-1. Clonez le dépôt :
-   ```bash
-   git clone https://github.com/maguettesiby/Samathiakthiak1.git
 
    ## Utilisation
 Pour installer ce projet, suivez ces étapes : 
