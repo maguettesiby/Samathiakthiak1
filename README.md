@@ -25,7 +25,7 @@ Pour installer ce projet, suivez ces étapes :
 
 
    ## Utilisation
-Pour installer ce projet, suivez ces étapes : 
+Pour executer le projet: 
   npm run dev
 
   ## Structure du projet
@@ -33,12 +33,18 @@ Pour installer ce projet, suivez ces étapes :
 
 backend/ : Contient le code du backend.
 frontend/ : Contient le code du frontend.
+
 README_DOCUMENTATION.md : Documentation du projet.
+
 GETTING_STARTED.md : Guide de démarrage.
+
 COMPLETION_REPORT.txt : Rapport de finalisation.
+
 ## Technologies utilisées
 TypeScript (94.3%)
+
 Python (3.4%)
+
 JavaScript (1.2%)
 
    
