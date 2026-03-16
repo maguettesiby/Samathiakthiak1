@@ -1,50 +1,33 @@
-# Samathiakthiak1
+# Samathiakthiak
 
-## Description
+Application web développée dans le but de proposer une solution numérique simple pour la gestion et l'organisation de certaines activités.  
+Ce projet a été réalisé dans le cadre de mon apprentissage du développement web afin de mettre en pratique la conception d'interfaces, la gestion des données et la logique applicative.
 
-Samathiakthiak1 est un projet qui vise à mettre en relation des utilisateurs avec des services de livraison et de transport (moto, taxi, transport de bagages et triporteurs). Ce dépôt contient le code source, la documentation, et des informations sur l'installation et l'utilisation.
+## Objectif du projet
 
-## Table des matières
+L'objectif de ce projet est de développer une application web fonctionnelle permettant :
 
-- [Installation](#installation)
-- [Utilisation](#utilisation)
-- [Structure du projet](#structure-du-projet)
-- [Technologies utilisées](#technologies-utilisées)
-- [Contributeurs](#contributeurs)
-- [Licence](#licence)
+- d'expérimenter le développement d'une application complète
+- d'améliorer mes compétences en développement web
+- de créer une solution numérique simple et intuitive
 
-## Installation
+## Fonctionnalités
 
-Pour installer ce projet, suivez ces étapes :
-
-1. Clonez le dépôt :
-   ```bash
-   git clone https://github.com/maguettesiby/Samathiakthiak1.git
-
-   # Samathiakthiak1
-
-
-   ## Utilisation
-Pour executer le projet: 
-  npm run dev
-
-  ## Structure du projet
-
-
-backend/ : Contient le code du backend.
-frontend/ : Contient le code du frontend.
-
-README_DOCUMENTATION.md : Documentation du projet.
-
-GETTING_STARTED.md : Guide de démarrage.
-
-COMPLETION_REPORT.txt : Rapport de finalisation.
+- Interface utilisateur simple et intuitive
+- Gestion des données
+- Navigation entre plusieurs pages
+- Organisation du code en modules
 
 ## Technologies utilisées
-TypeScript (94.3%)
 
-Python (3.4%)
+- HTML
+- CSS
+- React
+- PHP
+- JavaScript
+- Base de données
+- Git & GitHub
 
-JavaScript (1.2%)
+## Structure du projet
 
    
