@@ -25,7 +25,7 @@ L'objectif de ce projet est de développer une application web fonctionnelle per
 - React
 - PHP
 - JavaScript
-- Base de données
+- MySQL
 - Git & GitHub
 
 ## Structure du projet
